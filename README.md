@@ -35,4 +35,8 @@ Experiment
     python working_example.py --model {QDNN, QCNN, DNN, CNN}
     ```
 
-The experiment is conduced on a spoken dialogues corpus which is a set of automatically transcribed human-human telephone conversations from the customer care service (CCS) of the RATP Paris transportation system. The DECODA corpus is composed of 1,242 telephone conversations, which corresponds to about 74 hours of signal. Each conversation has to be mapped to the right theme (8).  
+The experiment is conduced on a spoken dialogues corpus which is a set of automatically transcribed human-human telephone conversations from the customer care service (CCS) of the RATP Paris transportation system. The DECODA corpus is composed of 1,242 telephone conversations, which corresponds to about 74 hours of signal. Each conversation has to be mapped to the right theme (8).
+
+History
+-------
+Aug-31-2025: Tested using the OCSA conda environment. Saved the environment to OCSA_requirements.txt. Tagged the environment as Base
