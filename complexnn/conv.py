@@ -42,7 +42,7 @@ class QuaternionConv(Layer):
             the number of quaternion feature maps. It is also the effective number
             of feature maps for each of the real and imaginary parts.
             (i.e. the number of quaternion filters in the convolution)
-            The total effective number of filters is 2 x filters.
+            The total effective number of filters is 4 x filters.
         kernel_size: An integer or tuple/list of n integers, specifying the
             dimensions of the convolution window.
         strides: An integer or tuple/list of n integers,
@@ -169,14 +169,14 @@ class QuaternionConv(Layer):
             raise ValueError('The channel dimension of the inputs '
                              'should be defined. Found `None`.')
         input_dim = input_shape[channel_axis] // 4
-        self.kernel_shape = self.kernel_size + (input_dim , self.filters)
+        self.kernel_shape = self.kernel_size + (input_dim, self.filters*4)
         
         kls = {'quaternion': qconv_init}[self.kernel_initializer]
         kern_init = kls(
             kernel_size=self.kernel_size,
             input_dim=input_dim,
             weight_dim=self.rank,
-                nb_filters=self.filters,
+            nb_filters=self.filters,
             criterion=self.init_criterion)
         
         self.kernel = self.add_weight(
