@@ -162,7 +162,7 @@ class QuaternionConv(Layer):
             raise ValueError('The channel dimension of the inputs '
                              'should be defined. Found `None`.')
         input_dim = input_shape[channel_axis] // 4
-        self.kernel_shape = self.kernel_size + (input_dim , self.filters)
+        self.kernel_shape = self.kernel_size + (input_dim , self.filters*4)
         
         kls = {'quaternion': qconv_init}[self.kernel_initializer]
         kern_init = kls(
