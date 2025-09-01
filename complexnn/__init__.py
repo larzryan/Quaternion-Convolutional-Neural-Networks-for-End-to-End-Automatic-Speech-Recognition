@@ -12,6 +12,7 @@ from   .conv  import (QuaternionConv,
 					  QuaternionConv3D)
 
 from   .dense import QuaternionDense
+from   .conv_utils import normalize_tuple, normalize_padding, conv_output_length
 from   .init  import (sqrt_init, qdense_init, qconv_init)
 from   .utils import (GetRFirst, GetIFirst, GetJFirst, GetKFirst, getpart_quaternion_output_shape_first, get_rpart_first, get_ipart_first, get_jpart_first,
 		      get_kpart_first)

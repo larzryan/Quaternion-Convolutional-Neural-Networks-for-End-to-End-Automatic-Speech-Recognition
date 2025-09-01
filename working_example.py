@@ -5,7 +5,7 @@
 import numpy                 as np
 
 import keras                        
-from   keras.optimizers      import Adam
+from   keras.optimizers      import Adam, SGD
 from   models.example_model  import *
 from   sklearn.preprocessing import normalize
 import sys
@@ -103,7 +103,8 @@ print('Dev size   : '+str(x_dev.shape[0]))
 print('Test size  : '+str(x_test.shape[0]))
 
 print('Parameters    -------------------------------')
-opt = Adam(lr = 0.0005)
+opt = Adam(learning_rate=0.0005)
+# opt = SGD(learning_rate=0.0005)
 print('learning rate   : '+str(params.lr))
 print('Model type      : '+str(params.model))
 

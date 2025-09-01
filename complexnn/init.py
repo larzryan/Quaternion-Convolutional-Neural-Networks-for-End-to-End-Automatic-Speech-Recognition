@@ -10,8 +10,38 @@ from random import gauss
 import keras.backend as K
 from keras import initializers
 from keras.initializers import Initializer
-from keras.utils.generic_utils import (serialize_keras_object,
-		deserialize_keras_object)
+# LTR - removed; not required
+# from keras.utils.generic_utils import (serialize_keras_object,
+# 		deserialize_keras_object)
+
+
+# LTR: The following was copied from the Tensorflow repository at https://github.com/keras-team/tf-keras/blob/33b6d26b43c4a0fb36437d24325d685bc2b6ddf2/tf_keras/initializers/initializers.py#L1137
+# This was removed in version 2 of Tensorflow.
+def _compute_fans(shape):
+    """Computes the number of input and output units for a weight shape.
+
+    Args:
+      shape: Integer shape tuple or TF tensor shape.
+
+    Returns:
+      A tuple of integer scalars (fan_in, fan_out).
+    """
+    if len(shape) < 1:  # Just to avoid errors for constants.
+        fan_in = fan_out = 1
+    elif len(shape) == 1:
+        fan_in = fan_out = shape[0]
+    elif len(shape) == 2:
+        fan_in = shape[0]
+        fan_out = shape[1]
+    else:
+        # Assuming convolution kernels (2D, 3D, or more).
+        # kernel shape: (..., input_depth, depth)
+        receptive_field_size = 1
+        for dim in shape[:-2]:
+            receptive_field_size *= dim
+        fan_in = shape[-2] * receptive_field_size
+        fan_out = shape[-1] * receptive_field_size
+    return int(fan_in), int(fan_out)
 
 
 #####################################################################
@@ -52,7 +82,7 @@ class qconv_init(Initializer):
 		else:
 			kernel_shape = (int(self.input_dim), self.kernel_size[-1])
 
-		fan_in, fan_out = initializers._compute_fans(
+		fan_in, fan_out = _compute_fans(
 				tuple(self.kernel_size) + (self.input_dim, self.nb_filters)
 				)
 

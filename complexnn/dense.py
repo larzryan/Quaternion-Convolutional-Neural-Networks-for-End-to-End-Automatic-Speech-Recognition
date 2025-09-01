@@ -5,13 +5,17 @@
 # Authors: Titouan Parcollet
 #
 
-from keras import backend as K
+# from keras import backend as K
+import tensorflow as tf
+import keras
 import sys; sys.path.append('.')
-from keras import backend as K
+# from keras import backend as K
 from keras import activations, initializers, regularizers, constraints
 from keras.layers import Layer, InputSpec
 import numpy as np
 from .init import qdense_init
+
+from .backend import concatenate, bias_add, dot
 
 class QuaternionDense(Layer):
     """Regular quaternion densely-connected NN layer.
@@ -94,7 +98,7 @@ class QuaternionDense(Layer):
         assert len(input_shape) == 2
         assert input_shape[-1] % 2 == 0
         input_dim = input_shape[-1] // 4
-        data_format = K.image_data_format()
+        data_format = tf.keras.config.image_data_format()
         kernel_shape = (input_dim, self.units)
         init_shape = (input_dim, self.q_units)
         
@@ -124,7 +128,7 @@ class QuaternionDense(Layer):
         self.built = True
 
     def call(self, inputs):
-        input_shape = K.shape(inputs)
+        input_shape = keras.ops.shape(inputs)
         input_dim = input_shape[-1] // 4
         
 
@@ -136,17 +140,17 @@ class QuaternionDense(Layer):
         #
         # Concatenate to obtain Hamilton matrix
         #
-        cat_kernels_4_r = K.concatenate([self.r, -self.i, -self.j, -self.k], axis=-1)  
-        cat_kernels_4_i = K.concatenate([self.i, self.r, -self.k, self.j], axis=-1)
-        cat_kernels_4_j = K.concatenate([self.j, self.k, self.r, -self.i], axis=-1)
-        cat_kernels_4_k = K.concatenate([self.k, -self.j, self.i, self.r], axis=-1)
-        cat_kernels_4_quaternion = K.concatenate([cat_kernels_4_r, cat_kernels_4_i, cat_kernels_4_j, cat_kernels_4_k], axis=0)
+        cat_kernels_4_r = concatenate([self.r, -self.i, -self.j, -self.k], axis=-1)
+        cat_kernels_4_i = concatenate([self.i, self.r, -self.k, self.j], axis=-1)
+        cat_kernels_4_j = concatenate([self.j, self.k, self.r, -self.i], axis=-1)
+        cat_kernels_4_k = concatenate([self.k, -self.j, self.i, self.r], axis=-1)
+        cat_kernels_4_quaternion = concatenate([cat_kernels_4_r, cat_kernels_4_i, cat_kernels_4_j, cat_kernels_4_k], axis=0)
         
         #
         # Perform inference
         #
 
-        output = K.dot(inputs, cat_kernels_4_quaternion)
+        output = dot(inputs, cat_kernels_4_quaternion)
         
         r_input = output[:, :self.units]
         i_input = output[:, self.units:self.units*2]
@@ -154,10 +158,10 @@ class QuaternionDense(Layer):
         k_input = output[:, self.units*3:]
         
         
-        output = K.concatenate([r_input, i_input, j_input, k_input], axis = -1)
+        output = concatenate([r_input, i_input, j_input, k_input], axis = -1)
         
         if self.use_bias:
-            output = K.bias_add(output, self.bias)
+            output = bias_add(output, self.bias)
         if self.activation is not None:
             output = self.activation(output)
 

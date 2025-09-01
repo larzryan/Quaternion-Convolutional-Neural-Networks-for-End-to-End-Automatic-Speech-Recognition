@@ -4,13 +4,20 @@
 # Contributors : Titouan Parcollet
 # Initial Authors: Chiheb Trabelsi
 
-from keras import backend as K
-from keras import activations, initializers, regularizers, constraints
-from keras.layers import Lambda, Layer, InputSpec, Convolution1D, Convolution2D, add, multiply, Activation, Input, concatenate
-from keras.layers.convolutional import _Conv
-from keras.layers.merge import _Merge
-from keras.layers.recurrent import Recurrent
-from keras.utils import conv_utils
+import keras
+
+from keras import activations, regularizers, constraints
+from keras.layers import Layer, InputSpec
+# LTR Removed
+# from keras.layers.convolutional import _Conv
+# from keras.layers.merge import _Merge
+# from keras.layers.recurrent import Recurrent
+
+# LTR Moved conv-utils into local directory
+# from keras.utils import conv_utils
+import complexnn.conv_utils as conv_utils
+from .backend import conv1d, conv2d, conv3d, concatenate, bias_add
+
 from keras.models import Model
 import numpy as np
 from .init import *
@@ -124,7 +131,7 @@ class QuaternionConv(Layer):
         self.kernel_size = conv_utils.normalize_tuple(kernel_size, rank, 'kernel_size')
         self.strides = conv_utils.normalize_tuple(strides, rank, 'strides')
         self.padding = conv_utils.normalize_padding(padding)
-        self.data_format = K.normalize_data_format(data_format)
+        self.data_format = conv_utils.normalize_data_format(data_format)
         self.dilation_rate = conv_utils.normalize_tuple(dilation_rate, rank, 'dilation_rate')
         self.activation = activations.get(activation)
         self.use_bias = use_bias
@@ -287,7 +294,7 @@ class QuaternionConv(Layer):
 
     def call(self, inputs):
         channel_axis = 1 if self.data_format == 'channels_first' else -1
-        input_dim    = K.shape(inputs)[channel_axis] // 4
+        input_dim    = keras.ops.shape(inputs)[channel_axis] // 4
         index2 = self.filters*2
         index3 = self.filters*3
         if self.rank == 1:
@@ -310,11 +317,11 @@ class QuaternionConv(Layer):
                     "padding":       self.padding,
                     "data_format":   self.data_format,
                     "dilation_rate": self.dilation_rate[0] if self.rank == 1 else self.dilation_rate}
-        convFunc = {1: K.conv1d,
-                    2: K.conv2d,
-                    3: K.conv3d}[self.rank]
+        convFunc = {1: conv1d,
+                    2: conv2d,
+                    3: conv3d}[self.rank]
 
-                
+
         #
         # Performing quaternion convolution
         #
@@ -324,17 +331,17 @@ class QuaternionConv(Layer):
         f_j._keras_shape = self.kernel_shape
         f_k._keras_shape = self.kernel_shape
 
-        cat_kernels_4_r = K.concatenate([f_r, -f_i, -f_j, -f_k], axis=-2)
-        cat_kernels_4_i = K.concatenate([f_i, f_r, -f_k, f_j], axis=-2)
-        cat_kernels_4_j = K.concatenate([f_j, f_k, f_r, -f_i], axis=-2)
-        cat_kernels_4_k = K.concatenate([f_k, -f_j, f_i, f_r], axis=-2)
-        cat_kernels_4_quaternion = K.concatenate([cat_kernels_4_r, cat_kernels_4_i, cat_kernels_4_j, cat_kernels_4_k], axis=-1)
+        cat_kernels_4_r = concatenate([f_r, -f_i, -f_j, -f_k], axis=-2)
+        cat_kernels_4_i = concatenate([f_i, f_r, -f_k, f_j], axis=-2)
+        cat_kernels_4_j = concatenate([f_j, f_k, f_r, -f_i], axis=-2)
+        cat_kernels_4_k = concatenate([f_k, -f_j, f_i, f_r], axis=-2)
+        cat_kernels_4_quaternion = concatenate([cat_kernels_4_r, cat_kernels_4_i, cat_kernels_4_j, cat_kernels_4_k], axis=-1)
         cat_kernels_4_quaternion._keras_shape = self.kernel_size + (4 * input_dim, 4 * self.filters)
 
         output = convFunc(inputs, cat_kernels_4_quaternion, **convArgs)
 
         if self.use_bias:
-            output = K.bias_add(
+            output = bias_add(
                 output,
                 self.bias,
                 data_format=self.data_format

@@ -30,7 +30,6 @@ def CNN(params):
         # Reducing dimension before Dense layer
         flat    = Flatten()(pool2)
         dense  = QuaternionDense(256, activation='relu')(flat)
-    
     else:
    
         input_seq = Input((250,3))
