@@ -8,20 +8,23 @@ import keras
 
 from keras import activations, regularizers, constraints
 from keras.layers import Layer, InputSpec
-# LTR Removed
+
+# LTR Removed - not required
 # from keras.layers.convolutional import _Conv
 # from keras.layers.merge import _Merge
 # from keras.layers.recurrent import Recurrent
 
-# LTR Moved conv-utils into local directory
+# LTR changed to new package locations
 # from keras.utils import conv_utils
-import complexnn.conv_utils as conv_utils
-from .backend import conv1d, conv2d, conv3d, concatenate, bias_add
+from tensorflow.python.keras.utils import conv_utils
+# from .backend import conv1d, conv2d, conv3d, concatenate, bias_add
+from tensorflow.python.keras.backend import conv1d, conv2d, conv3d, concatenate, bias_add
 
-from keras.models import Model
-import numpy as np
+# LTR - removed, not required
+# from keras.models import Model
+# import numpy as np
 from .init import *
-import sys
+# import sys
 
 
 #####################################################################

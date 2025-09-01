@@ -15,7 +15,7 @@ from keras.layers import Layer, InputSpec
 import numpy as np
 from .init import qdense_init
 
-from .backend import concatenate, bias_add, dot
+from tensorflow.python.keras.backend import concatenate, bias_add, dot
 
 class QuaternionDense(Layer):
     """Regular quaternion densely-connected NN layer.
