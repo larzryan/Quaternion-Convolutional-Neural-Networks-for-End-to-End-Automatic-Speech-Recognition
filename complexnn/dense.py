@@ -5,9 +5,10 @@
 # Authors: Titouan Parcollet
 #
 
-from keras import backend as K
+# from keras import backend as K
+from tensorflow.python.keras import backend as K
 import sys; sys.path.append('.')
-from keras import backend as K
+# from keras import backend as K
 from keras import activations, initializers, regularizers, constraints
 from keras.layers import Layer, InputSpec
 import numpy as np

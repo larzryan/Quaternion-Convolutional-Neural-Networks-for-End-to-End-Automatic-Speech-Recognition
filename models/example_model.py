@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 # Authors: Parcollet Titouan
 from   complexnn                             import *
-import keras
+# import keras
 from   keras.layers                          import *
 from   keras.models                          import Model
-import keras.backend                         as     K
-import numpy                                 as     np
+# import keras.backend                         as     K
+# import numpy                                 as     np
 
 #
 # ConvNet

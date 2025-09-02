@@ -103,7 +103,7 @@ print('Dev size   : '+str(x_dev.shape[0]))
 print('Test size  : '+str(x_test.shape[0]))
 
 print('Parameters    -------------------------------')
-opt = Adam(lr = 0.0005)
+opt = Adam(learning_rate = 0.0005)
 print('learning rate   : '+str(params.lr))
 print('Model type      : '+str(params.model))
 
